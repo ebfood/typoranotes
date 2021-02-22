@@ -1,4 +1,4 @@
-# 去哪儿网vue练习 header
+# 去哪儿网vue练习-首页篇
 
 ## 初始化
 
@@ -269,4 +269,140 @@ ellipse()
 @import， 调用
 
 ![image-20210221000532254](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210221000532254.png)
+
+## 热门推荐组件
+
+### html css
+
+```vue
+<template>
+  <div>
+    <div class="header">热门推荐</div>
+    <ul>
+      <li class="item" v-for="item of itemList" :key="item.id">
+        <img class="item-img" :alt="item.title" :src="item.imgUrl">
+        <div>
+          <p class="item-title">{{ item.title }}</p>
+          <p class="item-desc">{{ item.desc }}</p>
+          <button class="item-button">查看详情</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+```
+
++ 用flex布局，然后一个图片，一个div里面装着title，desc，button
+
++ 关于图片
+
+  ```stylus
+  .item-img
+    width 1.7rem
+    height 1.7rem
+    padding .1rem
+  ```
+
++ 一像素边框`class="item border-bottom"`
+
++ 文字超出边界
+
+  上文的`ellipse()` 还要在父亲div中`min-width 0`
+
+
+
+## ajax axios
+
+cnpm install axios --save
+
+在methods里面定义请求函数，并且在主页的mounted上调用，实现一次ajax请求
+
+在项目中，只有static文件夹可以被外部访问，因此需要在其中创建mock文件夹作为模拟数据
+
+为了上线之前不对接口改动，需要用转发机制，运用webpack的代理功能
+
+config/index.js 中的
+
+```javascript
+proxyTable: {
+      '/api': {
+        target: 'http://localhost:8080',
+        pathRewrite: {
+          '^/api' : '/static/mock'
+        }
+      }
+    },
+```
+
+然后就可以用api作为接口了
+
+```vue
+axios.get('/api/index.json')
+  .then(this.getHomeInfoSucc)
+```
+
+这样我们请求的api会被webpack-dev-server转发到mock文件夹中
+
+接着就是父子组件传递数据
+
+定义data
+
+```javascript
+data () {
+  return {
+    city: '',
+    swiperList: [],
+    iconList: [],
+    recommendList: [],
+    weekendList: []
+  }
+},
+```
+
+然后在请求成功赋值
+
+```javascript
+getHomeInfoSucc (res) {
+  res = res.data
+  if (res.ret && res.data) {
+    const data = res.data
+    this.city = data.city
+    this.swiperList = data.swiperList
+    this.iconList = data.iconList
+    this.recommendList = data.recommendList
+    this.weekendList = data.recommendList
+  }
+}
+```
+
+模版里给子组件传值
+
+```html
+<home-header :city="city"></home-header>
+<home-swiper :list="swiperList"></home-swiper>
+<home-icons :list="iconList"></home-icons>
+<home-recommend :list="recommendList"></home-recommend>
+<home-weekend :list="weekendList"></home-weekend>
+```
+
+在子组件Swiper.vue（举个例子）
+
+首先肯定要接受参数，删除之前写死的data变量，在模版里把变量改了。
+
+这个组件有点特殊 swiper 的轮播导航点点，对又是他，会根据数组长度来构建，我们开始传入的数据len是0，就bug了，于是创建一个computed，当ajax传入成功的时候自动计算，然后把这个变量绑定在swiper组件上v-if就好了，这样的当length 不等于0的时候才构建组件
+
+```vue
+props: {
+  list: Array
+},
+computed: {
+    showSwiper () {
+      return this.list.length
+    }
+  }
+```
+
+首页结束，合影留念
+
+![image-20210222114138020](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210222114138020.png)
 
