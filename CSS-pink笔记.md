@@ -426,3 +426,82 @@ margin-top: -高度的一半;
 2. 如果块元素加了定位, 还没给宽度高度, 那就是内容的宽高
 3. 脱标的盒子不会引起margin塌陷
 4. float不会压住标准流的文字, positon连文字都一起压住
+
+
+
+# 精灵图
+
+减少服务器请求次数, 加快页面加载速度.
+
++ 针对于背景图片
+
++ CSS二倍精灵图使用方法https://blog.csdn.net/weixin_39295546/article/details/104709129
+
++ 二倍精灵图,所以用ps缩放一半
+
+  ![image-20210311151040935](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210311151040935.png)
+
+  ![image-20210311151130063](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210311151130063.png)
+
+  窗口 -> 信息 就可以看到当前鼠标坐标
+
+  ![image-20210311151223940](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210311151223940.png)
+
+  然后写代码
+
+
+
+# CSS3
+
+## 属性选择器
+
++ E[att]
++ **E[att=val]**
++ E[att^=val] 属性att以val开头的元素
++ E[att$=val] .....结尾.....
++ E[att*=val] ......含有....
++ 属性选择器权重10
+
+## 结构伪类选择器
+
++ E:first-child	E:last-child 是第一个孩子的E元素
+
++ E:nth-child(n) 是第n个孩子的E元素
+   n可以是 even, odd
+  也可以是n, 只能是字母n, 就是选择了所有孩子
+  2n: 2x0 2x1 2x2 2x3 即偶数孩子
+  5n: 5的倍数
+  n+5: 从第五个到最后
+-n+5: 前5个
+  
++ E:first-of-type
+
+  ```css
+  div:nth-child(1) {
+  	/*先找指定序号, 再去看是不是指定元素*/
+  }
+  div:nth-of-type(1) {
+  	/*先找指定元素, 再去找序号*/
+  }
+  ```
+
+  
+
+## 伪元素选择器
+
+通过CSS插入元素, 避免html标签嵌套, 叫伪元素是因为在文档树中找不到这个元素
+
+### element::before | element::after
+
++ 在element里面的内容的前面/后面加上盒子
++ 必须有content元素
++ 是行内元素
++ 权重是1
+
+
+
+## 渐变颜色
+
+background: -webkit-linear-gradient(left, red, blue)
+必须添加私有前缀
+
