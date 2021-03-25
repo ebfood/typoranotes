@@ -126,7 +126,142 @@ order: <number>; 越小越靠前，默认是0
 
 
 
+# Less
+
+## 变量
+
+@name: v;	eg: @fontColor: #333;
+
+## 编译
+
+easy less插件, 会自动编译css, 引用就好了
+
+## 嵌套
+
+```less
+.header {
+  a {
+    // 子元素直接卸载父元素里面
+    &:hover {
+      // 伪类, 伪元素, 交集选择器, 需要加&
+    }
+  }
+}
+```
+
+## 运算
+
++ 运算符之间, 左右空格隔开
++ 第二个数字可以省略单位
++  两个数字单位不同,结果以第一个数的单位为准
++ 除法需要加括号
+
+## @import
+
+可以吧一个less导入less, link是导入到html
+
 
 
 # rem布局
 
+## 基础
+
+em是相对于父元素的字体大小来说的, rem是相对于html元素的字体大小来说的, 所以整体用rem布局, 当页面大小改变的时候, 只需要改变html元素的字体大小, 就可以实现改变页面元素大小整体控制
+
+## 媒体查询
+
+@media可以根据不同的屏幕尺寸设置不同样式
+
+```css
+@media screen and (max-width:800px){
+  /* 在小于等于800px的屏幕上 */
+}
+@media screen and (max-width:600px){
+  /* 在小于等于600px的屏幕上 */
+}
+@media screen and (min-width:600px) and (max-width:700px) {
+  /* 在600px-700px的屏幕上 */
+}
+```
+
++ 一般按照从大到小or从小到大来设置
+  从小到大更简洁, 因为可以层叠
+
+## 引入资源
+
+当样式比较多, 直接在link中判断设备尺寸, 准备多套css, 根据尺寸调不同的css
+eg: 当屏幕够大, 一行三个div, 当小屏幕, 一行1个div 
+
+```css
+<link rel="stylesheet" href="style320.css" media="screen and (min-width: 320px)">
+    <link rel="stylesheet" href="style640.css" media="screen and (min-width: 640px)">
+```
+
+## rem适配方案
+
+1. less + 媒体查询 + rem
+2. flexible.js + rem
+
+
+
+# less+ 媒体查询 + rem
+
+## 元素大小
+
+pink老师讲的太好: https://www.bilibili.com/video/BV14J4114768?p=453
+
++ 将屏幕划分n等份, 作为html字体大小
++ 页面元素rem = 页面元素值px / (屏幕宽度/分的份数n)
++ or  元素rem = px / html.font-size
+
+来康康苏宁的写法
+
+![image-20210312103243050](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210312103243050.png)
+
+苏宁分了15份
+
+***<u>所以, 就照着750px宽度, 分成15份去写, 也就是一份50px, 去算rem, 在其他尺寸会自适应!!!!</u>***
+
+- *重点是, 假设给的设计稿是750px, 要求切15等份, 那么一份就是50px, 设置less变量@baseFont: 50px; 量取设计稿的px之后, 比如说36px的按钮, 那就是 (36rem / @baseFont), 就会转化成rem 注意 #baseFont应该跟着设计稿计算出来在设置, 要和设计稿尺寸统一, 就可以算出rem, 之后无论什么尺寸, 都是按照比例缩放的.*
+
+详见苏宁项目
+
+# flexible.js
+
++ 自动划分10等份, 不需要去写媒体查询啦, 要做的只是按照设计稿/10得到font-size, 然后去算rem
+
++ 因为是按照整个屏幕划分的, 因此需要加max-width约束一下
+
++ 限制750宽度
+
+  ```css
+  @media screen and (min-width:750px) {
+    html {
+      font-size: 75px!important;
+    }
+  }
+  ```
+
+  
+
+## CSSREM 插件
+
+自动转化rem, 神器, 记得设置htmlroot的font-size哦, 不然默认是16px
+
+webstrom 里面的是px2rem, 首选项  px to rem 设置root fontsize
+
+
+
+
+
+# 响应式开发
+
+基于媒体查询, 有一组划分屏幕的档位
+
+![image-20210312195200106](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210312195200106.png)
+
+## 布局容器
+
+不同屏幕下, 通过媒体查询改变布局容器的大小, 再改变里面的子元素排列方式, 从而实现在不同屏幕下, 看到的布局样式不同
+
+一般叫做container, 直接用@media设置
